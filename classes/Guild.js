@@ -1,5 +1,4 @@
 const Base = require('./Base');
-const cdn = require('../cdn-utils');
 
 class Guild extends Base {
   /** @type {string} */ name;
@@ -53,15 +52,6 @@ class Guild extends Base {
    */
   iconURL(options) {
     return cdn.icon(this.id, this.icon, options);
-  }
-
-  get htmlTableRows() {
-    const { td, th, tr } = require('../html/html-utils');
-    return [
-      super.htmlTableRows,
-      tr(th('name'), td(this.name)),
-      tr(th('icon'), td(require('../utils').allImageSizes(this, this.iconURL)))
-    ].join('');
   }
 };
 

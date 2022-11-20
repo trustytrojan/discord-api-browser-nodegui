@@ -1,4 +1,4 @@
-const { QMainWindow, QLineEdit, QPushButton, QLabel, EchoMode, Direction, QDialog, QErrorMessage, FontDialogOption } = require('@nodegui/nodegui');
+const { QMainWindow, QLineEdit, QPushButton, QLabel, EchoMode, Direction, QDialog, QErrorMessage } = require('@nodegui/nodegui');
 const { quick_construct, _QGridLayout, _setLayout, _QBoxLayout } = require('./utils');
 const { writeFileSync } = require('fs');
 const Client = require('./classes/Client');
@@ -65,7 +65,6 @@ function showLoginForm(client) {
   const login_btn = quick_construct(QPushButton, { text: 'Login' });
   login_btn.addEventListener('clicked', async () => {
     const token = token_le.text();
-    // progress bar???
     await client.login(token);
     if(client.user) saveTokenDialog(token);
     else badTokenDialog();
@@ -78,7 +77,7 @@ function showLoginForm(client) {
   
   const layout = _QGridLayout([
     [token_l, token_le],
-    [null, btns]
+    [null, btns],
   ]);
   
   const main_window = new QMainWindow();

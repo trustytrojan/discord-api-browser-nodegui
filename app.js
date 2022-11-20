@@ -1,7 +1,10 @@
 const Client = require('./classes/Client');
 
-const client = new Client();
+async function main() {
+  const client = new Client();
+  try { await client.login(require('./token.json')); }
+  catch(err) { require('./login-form')(client); }
+  
+}
 
-require('./login-form')(client);
-console.log('login form was shown');
-
+main();

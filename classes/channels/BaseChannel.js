@@ -1,4 +1,3 @@
-const { tr, th, td } = require('../../html/html-utils');
 const Base = require('../Base');
 const channel_types = require('./channel-types');
 
@@ -14,13 +13,6 @@ class BaseChannel extends Base {
 
   get typeString() {
     return channel_types.to_string(this.type);
-  }
-
-  get htmlTableRows() {
-    return [
-      super.htmlTableRows,
-      tr(th('type'), td(`${this.type} - ${this.typeString}`))
-    ].join('');
   }
 };
 

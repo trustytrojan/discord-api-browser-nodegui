@@ -1,6 +1,5 @@
 const TextBasedChannel = require('./TextBasedChannel');
 const User = require('../User');
-const { a, tr, th, td } = require('../../html/html-utils');
 
 class DMChannel extends TextBasedChannel {
   /** @type {User} */ recipient;
@@ -18,14 +17,6 @@ class DMChannel extends TextBasedChannel {
   get name() {
     const { tag, username, discriminator } = this.recipient;
     return `DM with ${tag ?? `${username}#${discriminator}`}`;
-  }
-
-  get htmlTableRows() {
-    const { id, tag, username, discriminator } = this.recipient;
-    return [
-      super.htmlTableRows,
-      tr(th('recipient'), td(a(`/users/${id}`, tag ?? `${username}#${discriminator}`)))
-    ].join('');
   }
 };
 

@@ -1,5 +1,4 @@
 const Client = require('./Client');
-const { th, td, tr } = require('../html/html-utils');
 
 const discord_epoch = 1420070400000n;
 
@@ -21,12 +20,6 @@ class Base {
     this.created_timestamp = new Date(timestampFrom(this.id));
   }
 
-  get htmlTableRows() {
-    return [
-      tr(th('id'), td(this.id)),
-      tr(th('created_timestamp'), td(this.created_timestamp))
-    ].join('');
-  }
 };
 
 module.exports = Base;

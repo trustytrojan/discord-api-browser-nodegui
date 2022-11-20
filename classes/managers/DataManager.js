@@ -1,6 +1,6 @@
-class DataManager {
-  static base_url = 'https://discord.com/api/v9';
+const Client = require('../Client');
 
+class DataManager {
   /** @type {Client} */ client;
   /** @type {Map<string,any>} */ cache;
 
@@ -18,14 +18,27 @@ class DataManager {
    * @returns {any}
    */
   async fetch(api_path) {
-    const url = `${DataManager.base_url}${api_path}`;
-    console.log(`Fetching ${url}`);
+    api_path = `/api/v9${api_path}`;
+    console.log(`Fetching https://discord.com${api_path}`);
 
-    const resp = await fetch(url, { headers: { authorization: this.client.token } });
-    const obj = await resp.json();
+    const req = require('https').get({
+      host: 'discord.com',
+      path: api_path,
+      headers: {
+        authorization: this.client.token
+      }
+    });
+    const [res] = await once(req, 'response');
+    let data = '';
+    res.on('data', (chunk) => data += chunk);
+    await require('events').once(res, 'end');
+    const obj = JSON.parse(data);
 
     // discord responds with a `message` property to indicate an error
-    if(obj.message) throw obj;
+    if(obj.message) {
+      console.error(obj);
+      throw 'Invalid token!';
+    }
 
     return obj;
   }
