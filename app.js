@@ -1,5 +1,7 @@
-const showLoginForm = require('./login-form');
+const Client = require('./classes/Client');
 
-showLoginForm();
+const client = new Client();
 
+require('./login-form')(client);
 console.log('login form was shown');
+
