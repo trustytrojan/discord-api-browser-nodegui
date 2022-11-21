@@ -1,4 +1,5 @@
 const Client = require('../Client');
+const fetch = require('node-fetch').default;
 
 class DataManager {
   /** @type {Client} */ client;
@@ -18,21 +19,11 @@ class DataManager {
    * @returns {any}
    */
   async fetch(api_path) {
-    api_path = `/api/v9${api_path}`;
-    console.log(`Fetching https://discord.com${api_path}`);
+    const url = `https://discord.com/api/v9${api_path}`;
+    console.log(`Fetching ${url}`);
 
-    const req = require('https').get({
-      host: 'discord.com',
-      path: api_path,
-      headers: {
-        authorization: this.client.token
-      }
-    });
-    const [res] = await once(req, 'response');
-    let data = '';
-    res.on('data', (chunk) => data += chunk);
-    await require('events').once(res, 'end');
-    const obj = JSON.parse(data);
+    const resp = await fetch(url, { headers: { authorization: this.client.token } });
+    const obj = await resp.json();
 
     // discord responds with a `message` property to indicate an error
     if(obj.message) {

@@ -14,6 +14,6 @@ class BaseChannel extends Base {
   get typeString() {
     return channel_types.to_string(this.type);
   }
-};
+}
 
 module.exports = BaseChannel;

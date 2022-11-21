@@ -1,23 +1,26 @@
 const { QWidget, QGridLayout, QLayout, QMainWindow, EchoMode, Direction, QBoxLayout } = require('@nodegui/nodegui');
 
 /**
- * @typedef WidgetConstructOptions
+ * @typedef ConstructOptions
  * @prop {string} name
  * @prop {string} text
  * @prop {EchoMode} echo_mode
+ * @prop {string[]} columns
  */
 
 /**
  * Streamline the construction of certain QWidgets.
- * @param {() => QWidget} constructor 
- * @param {WidgetConstructOptions}
+ * @param {() => *} constructor 
+ * @param {ConstructOptions}
  */
-function quick_construct(constructor, { name, text, echo_mode }) {
-  const widget = new constructor();
-  if(text) widget.setText(text);
-  if(name) widget.setObjectName(name);
-  if(echo_mode) widget.setEchoMode(echo_mode);
-  return widget;
+function quick_construct(constructor, { text, echo_mode, columns }) {
+  const obj = new constructor();
+  if(text) obj.setText(text);
+  if(echo_mode) obj.setEchoMode(echo_mode);
+  if(columns)
+    for(let i = 0; i < columns.length; ++i)
+      obj.setText(i, columns[i])
+  return obj;
 }
 
 /**

@@ -2,32 +2,13 @@ const { QMainWindow, QLineEdit, QPushButton, QLabel, EchoMode, Direction, QDialo
 const { quick_construct, _QGridLayout, _setLayout, _QBoxLayout } = require('./utils');
 const { writeFileSync } = require('fs');
 const Client = require('./classes/Client');
-
-const widget_color = '#484848';
-const text_color = `'white'`;
-const style_sheet = `
-  QMainWindow {
-    background-color: #333333
-  }
-  QDialog {
-    background-color: #333333
-  }
-  QLineEdit {
-    background-color: ${widget_color};
-    color: ${text_color};
-  }
-  QLabel {
-    color: ${text_color}
-  }
-  QPushButton {
-    background-color: ${widget_color};
-    color: ${text_color}
-  }
-`;
+const style_sheet = require('./style-sheet');
 
 function badTokenDialog() {
   const dialog = new QErrorMessage();
+  //dialog.setWindowTitle('Invalid token!');
   dialog.setStyleSheet(style_sheet);
+  dialog.exec();
 }
 
 /**
@@ -57,8 +38,9 @@ function saveTokenDialog(token) {
 /**
  * Gets token from user, injects it into client
  * @param {Client} client 
+ * @returns {Promise<void>}
  */
-function showLoginForm(client) {  
+const showLoginForm = (client) => new Promise((resolve, reject) => {
   const token_l = quick_construct(QLabel, { text: 'Enter Discord token:' });
   const token_le = quick_construct(QLineEdit, { echo_mode: EchoMode.Password });
   
@@ -66,12 +48,16 @@ function showLoginForm(client) {
   login_btn.addEventListener('clicked', async () => {
     const token = token_le.text();
     await client.login(token);
-    if(client.user) saveTokenDialog(token);
-    else badTokenDialog();
+    if(client.user) {
+      saveTokenDialog(token);
+      resolve();
+    } else badTokenDialog();
   });
 
   const cancel_btn = quick_construct(QPushButton, { text: 'Cancel' });
-  cancel_btn.addEventListener('clicked', process.exit);
+  cancel_btn.addEventListener('clicked', () => {
+    reject();
+  });
 
   const btns = _QBoxLayout(Direction.RightToLeft, [login_btn, cancel_btn]);
   
@@ -84,6 +70,6 @@ function showLoginForm(client) {
   _setLayout(main_window, layout);
   main_window.setStyleSheet(style_sheet);
   main_window.show();
-}
+});
 
 module.exports = showLoginForm;
