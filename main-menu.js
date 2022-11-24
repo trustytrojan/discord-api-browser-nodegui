@@ -1,7 +1,10 @@
 const Client = require('./classes/Client');
 const style_sheet = require('./style-sheet');
-const { AlignmentFlag, TabPosition, QIcon } = require('@nodegui/nodegui');
-const { _QLabel, _QTreeWidgetItem, _QTreeWidget, _QPushButton, _QTabWidget, _QMainWindow } = require('./utils');
+const { TabPosition, Direction, QMainWindow } = require('@nodegui/nodegui');
+const { _QLabel, _QTreeWidget, _QPushButton, _QTabWidget, _QMainWindow, _QBoxLayout } = require('./custom-constructors');
+const { wrap_layout } = require('./utils');
+
+let mw;
 
 /**
  * For guilds,channels,users
@@ -9,14 +12,13 @@ const { _QLabel, _QTreeWidgetItem, _QTreeWidget, _QPushButton, _QTabWidget, _QMa
  * @param {string} elementType
  */
 function generateTab(client, elementType) {
-  if(client[elementType].cache.size === 0) {
+  /** @type {Map<string,any>} */
+  const data = client[elementType].cache;
+  if(data.size === 0) {
     const without_the_s = elementType.substring(0, elementType.length-1);
-    return _QLabel({ text: `${without_the_s} cache is empty`, alignment: AlignmentFlag.AlignCenter });
+    return _QLabel(`${without_the_s} cache is empty`);
   }
-  const tree = _QTreeWidget({ column_count: 2 });
-  for(const { id, name } of client[elementType].cache.values())
-    tree.addTopLevelItem(_QTreeWidgetItem({ columns: [id, name] }));
-  return tree;
+  return _QTreeWidget(2, Array.from(data.entries()).map(([k,v]) => [k, v.name ?? v.tag]));
 }
 
 /**
@@ -24,30 +26,31 @@ function generateTab(client, elementType) {
  */
 function clientUserTab(client) {
   if(!client.user) {
-    const label = _QLabel({ text: 'no user login', alignment: AlignmentFlag.AlignCenter });
-    //const login_btn = _QPushButton({ text: 'login' });
-    return label;
+    const label = _QLabel('no user login');
+    const login_btn = _QPushButton('login', () => {
+      require('./login-form')(client);
+      mw.setCentralWidget(generateTabWidget(client));
+    });
+    const layout = new _QBoxLayout(Direction.TopToBottom, [label, login_btn]);
+    return wrap_layout(layout);
   }
-  const tree = _QTreeWidget({ column_count: 2 });
-  for(const k in client.user)
-    tree.addTopLevelItem(_QTreeWidgetItem({ columns: [k, client.user[k]] }));
-  return tree;
+  return _QTreeWidget(2, Object.entries(client.user).map(([k,v]) => v ? [k, v?.toString()] : undefined));
+}
+
+function generateTabWidget(client) {
+  const tabs = [];
+  for(const s of ['Guilds', 'Channels', 'Users'])
+    tabs.push([generateTab(client, s.toLowerCase()), s]);
+  tabs.push([clientUserTab(client), 'Me']);
+  return _QTabWidget(tabs, TabPosition.West);
 }
 
 /**
  * @param {Client} client 
  */
 function showMainMenu(client) {
-  const tabs = _QTabWidget({ tab_position: TabPosition.West });
-  for(const s of ['Guilds', 'Channels', 'Users'])
-    tabs.addTab(generateTab(client, s.toLowerCase()), new QIcon(), s);
-  tabs.addTab(clientUserTab(client), new QIcon(), 'Me');
-  _QMainWindow({
-    show: true,
-    central_widget: tabs,
-    dimensions: { min: [500,300] },
-    style_sheet
-  });
+  mw = _QMainWindow('Discord API Browser', generateTabWidget(client), style_sheet, { min: [800,600] });
+  mw.show();
 }
 
 module.exports = showMainMenu;
