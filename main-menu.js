@@ -4,6 +4,7 @@ const { TabPosition, Direction, QMainWindow } = require('@nodegui/nodegui');
 const { _QLabel, _QTreeWidget, _QPushButton, _QTabWidget, _QMainWindow, _QBoxLayout } = require('./custom-constructors');
 const { wrap_layout } = require('./utils');
 
+/** @type {QMainWindow} */
 let mw;
 
 /**
@@ -49,7 +50,7 @@ function generateTabWidget(client) {
  * @param {Client} client 
  */
 function showMainMenu(client) {
-  mw = _QMainWindow('Discord API Browser', generateTabWidget(client), style_sheet, { min: [800,600] });
+  if(!mw) mw = _QMainWindow('Discord API Browser', generateTabWidget(client), style_sheet, { min: [800,600] });
   mw.show();
 }
 
