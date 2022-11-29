@@ -16,7 +16,6 @@ class DataManager {
   /**
    * Returns the raw JSON object received by the Discord API at the desired path.
    * @param {string} api_path Should take the form of `/path/id`
-   * @returns {any}
    */
   async fetch(api_path) {
     const url = `https://discord.com/api/v9${api_path}`;

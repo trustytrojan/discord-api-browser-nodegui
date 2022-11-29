@@ -10,7 +10,6 @@ const User = require('./classes/User');
 const no_icon = new QIcon();
 const mw = new QMainWindow();
 mw.setWindowTitle('Discord API Browser');
-mw.setCentralWidget(generateTabWidget(client));
 mw.setStyleSheet(style_sheet);
 mw.setMinimumSize(800, 600);
 
@@ -35,7 +34,7 @@ function generateTab(client, elementType) {
   }[elementType];
   tree.setHeaderLabels(['id', name_column]);
   for(const [k,v] of data) {
-    if(!v) continue;
+    if(typeof v !== 'string') continue;
     tree.addTopLevelItem(_QTreeWidgetItem([k, v]));
   }
   return tree;
@@ -56,7 +55,7 @@ function clientUserTab(client) {
   }
   const tree = new QTreeWidget();
   tree.setColumnCount(2);
-  tree.setHeaderLabels('key', 'value');
+  tree.setHeaderLabels(['key', 'value']);
   for(const k in client.user) {
     if(!client.user[k]) continue;
     tree.addTopLevelItem(_QTreeWidgetItem([k, client.user[k]]));

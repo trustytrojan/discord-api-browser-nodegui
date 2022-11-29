@@ -24,7 +24,10 @@ function saveTokenDialog(token) {
     [{ object: _QLabel('Would you like to save your token?'), rowSpan: 2 }],
     [no_btn, yes_btn]
   ]);
-  const dialog = _QDialog('Save Token', layout, style_sheet);
+  const dialog = new QDialog();
+  dialog.setWindowTitle('Save Token');
+  dialog.setStyleSheet(style_sheet);
+  dialog.setLayout(layout);
   dialog.exec();
 }
 

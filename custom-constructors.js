@@ -27,10 +27,10 @@ function _QLineEdit(echo_mode) {
  * @param {string} text
  * @param {AlignmentFlag} alignment
  */
-function _QLabel(text, alignment) {
+function _QLabel(text, alignment = AlignmentFlag.AlignCenter) {
   const label = new QLabel();
   label.setText(text);
-  if(alignment) label.setAlignment(alignment);
+  label.setAlignment(alignment);
   return label;
 }
 
