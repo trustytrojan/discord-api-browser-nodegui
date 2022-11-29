@@ -1,17 +1,37 @@
 const Client = require('./classes/Client');
 const style_sheet = require('./style-sheet');
-const { TabPosition, Direction, QMainWindow, QTreeWidget, QTabWidget, QIcon } = require('@nodegui/nodegui');
-const { _QLabel, _QPushButton, _QBoxLayout, _QTreeWidgetItem } = require('./custom-constructors');
+const { TabPosition, Direction, QMainWindow, QTreeWidget, QTabWidget, QIcon, QMenuBar, QMenu, QAction } = require('@nodegui/nodegui');
+const { _QLabel, _QPushButton, _QBoxLayout, _QTreeWidgetItem, _QAction } = require('./custom-constructors');
 const { wrap_layout } = require('./utils');
-const Guild = require('./classes/Guild');
-const BaseChannel = require('./classes/channels/BaseChannel');
-const User = require('./classes/User');
 
 const no_icon = new QIcon();
-const mw = new QMainWindow();
-mw.setWindowTitle('Discord API Browser');
-mw.setStyleSheet(style_sheet);
-mw.setMinimumSize(800, 600);
+
+class MainMenu extends QMainWindow {
+  /** @type {Client} */ client;
+
+  constructor(client) {
+    super();
+    this.client = client;
+    this.setWindowTitle('Discord API Browser');
+    this.setStyleSheet(style_sheet);
+    this.setMinimumSize(800, 600);
+
+    const fetch_friends = _QAction('Fetch Friends', () => {
+
+    });
+  }
+}
+
+
+const fetch_menu = new QMenu();
+fetch_menu.
+
+new QAction().addEventListener('triggered', () =>)
+
+const menu_bar = new QMenuBar();
+menu_bar.addMenu(fetch_menu);
+
+mw.setMenuBar(menu_bar);
 
 /**
  * For guilds,channels,users
@@ -19,7 +39,6 @@ mw.setMinimumSize(800, 600);
  * @param {'guilds' | 'channels' | 'users'} elementType
  */
 function generateTab(client, elementType) {
-  /** @type {Map<string, Guild | BaseChannel | User>} */
   const data = client[elementType].cache;
   if(data.size === 0) {
     const without_the_s = elementType.substring(0, elementType.length-1);
@@ -33,9 +52,8 @@ function generateTab(client, elementType) {
     users: 'tag'
   }[elementType];
   tree.setHeaderLabels(['id', name_column]);
-  for(const [k,v] of data) {
-    if(typeof v !== 'string') continue;
-    tree.addTopLevelItem(_QTreeWidgetItem([k, v]));
+  for(const [k, { name, tag }] of data) {
+    tree.addTopLevelItem(_QTreeWidgetItem([k, name ?? tag]));
   }
   return tree;
 }
@@ -57,7 +75,7 @@ function clientUserTab(client) {
   tree.setColumnCount(2);
   tree.setHeaderLabels(['key', 'value']);
   for(const k in client.user) {
-    if(!client.user[k]) continue;
+    if(typeof client.user[k] !== 'string') continue;
     tree.addTopLevelItem(_QTreeWidgetItem([k, client.user[k]]));
   }
   return tree;
