@@ -1,8 +1,19 @@
 const {
   QTreeWidgetItem,
   QWidget, EchoMode, QLineEdit, AlignmentFlag, QLabel, QPushButton, QLayout,
-  QBoxLayout, QGridLayout,
+  QBoxLayout, QGridLayout, QAction,
 } = require('@nodegui/nodegui');
+
+/**
+ * @param {string} text
+ * @param {(checked: boolean) => void} onclick
+ */
+function _QAction(text, onclick) {
+  const action = new QAction();
+  action.setText(text);
+  action.addEventListener('triggered', onclick);
+  return action;
+}
 
 /**
  * @param {string[]} columns
@@ -86,6 +97,7 @@ function _QBoxLayout(direction, widgets) {
 }
 
 module.exports = {
+  _QAction,
   _QTreeWidgetItem,
   _QLineEdit,
   _QLabel,
