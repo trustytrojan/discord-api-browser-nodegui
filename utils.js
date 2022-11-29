@@ -11,6 +11,4 @@ function wrap_layout(layout) {
   return widget;
 }
 
-module.exports = {
-  get wrap_layout() { return wrap_layout; },
-};
+module.exports = { wrap_layout };

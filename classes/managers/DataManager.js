@@ -26,10 +26,8 @@ class DataManager {
     const obj = await resp.json();
 
     // discord responds with a `message` property to indicate an error
-    if(obj.message) {
-      console.error(obj);
-      throw 'Invalid token!';
-    }
+    if(!resp.ok)
+      throw resp.status;
 
     return obj;
   }

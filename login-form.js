@@ -1,7 +1,7 @@
-const { EchoMode, Direction, QErrorMessage } = require('@nodegui/nodegui');
+const { EchoMode, Direction, QErrorMessage, QDialog } = require('@nodegui/nodegui');
 const { writeFileSync } = require('fs');
 const Client = require('./classes/Client');
-const { _QPushButton, _QGridLayout, _QLabel, _QLineEdit, _QBoxLayout, _QDialog } = require('./custom-constructors');
+const { _QPushButton, _QGridLayout, _QLabel, _QLineEdit, _QBoxLayout } = require('./custom-constructors');
 const style_sheet = require('./style-sheet');
 
 function badTokenDialog() {
@@ -55,7 +55,10 @@ function showLoginForm(client) {
     [null, btns],
   ]);
   
-  const dialog = _QDialog('Login', layout, style_sheet);
+  const dialog = new QDialog();
+  dialog.setWindowTitle('Login');
+  dialog.setLayout(layout);
+  dialog.setStyleSheet(style_sheet);
   dialog.exec();
 }
 

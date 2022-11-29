@@ -1,25 +1,44 @@
 const Client = require('./classes/Client');
 const style_sheet = require('./style-sheet');
-const { TabPosition, Direction, QMainWindow } = require('@nodegui/nodegui');
-const { _QLabel, _QTreeWidget, _QPushButton, _QTabWidget, _QMainWindow, _QBoxLayout } = require('./custom-constructors');
+const { TabPosition, Direction, QMainWindow, QTreeWidget, QTabWidget, QIcon } = require('@nodegui/nodegui');
+const { _QLabel, _QPushButton, _QBoxLayout, _QTreeWidgetItem } = require('./custom-constructors');
 const { wrap_layout } = require('./utils');
+const Guild = require('./classes/Guild');
+const BaseChannel = require('./classes/channels/BaseChannel');
+const User = require('./classes/User');
 
-/** @type {QMainWindow} */
-let mw;
+const no_icon = new QIcon();
+const mw = new QMainWindow();
+mw.setWindowTitle('Discord API Browser');
+mw.setCentralWidget(generateTabWidget(client));
+mw.setStyleSheet(style_sheet);
+mw.setMinimumSize(800, 600);
 
 /**
  * For guilds,channels,users
  * @param {Client} client 
- * @param {string} elementType
+ * @param {'guilds' | 'channels' | 'users'} elementType
  */
 function generateTab(client, elementType) {
-  /** @type {Map<string,any>} */
+  /** @type {Map<string, Guild | BaseChannel | User>} */
   const data = client[elementType].cache;
   if(data.size === 0) {
     const without_the_s = elementType.substring(0, elementType.length-1);
     return _QLabel(`${without_the_s} cache is empty`);
   }
-  return _QTreeWidget(2, Array.from(data.entries()).map(([k,v]) => [k, v.name ?? v.tag]));
+  const tree = new QTreeWidget();
+  tree.setColumnCount(2);
+  const name_column = {
+    guilds: 'name',
+    channels: 'name / description',
+    users: 'tag'
+  }[elementType];
+  tree.setHeaderLabels(['id', name_column]);
+  for(const [k,v] of data) {
+    if(!v) continue;
+    tree.addTopLevelItem(_QTreeWidgetItem([k, v]));
+  }
+  return tree;
 }
 
 /**
@@ -35,23 +54,28 @@ function clientUserTab(client) {
     const layout = new _QBoxLayout(Direction.TopToBottom, [label, login_btn]);
     return wrap_layout(layout);
   }
-  return _QTreeWidget(2, Object.entries(client.user).map(([k,v]) => v ? [k, v?.toString()] : undefined));
+  const tree = new QTreeWidget();
+  tree.setColumnCount(2);
+  tree.setHeaderLabels('key', 'value');
+  for(const k in client.user) {
+    if(!client.user[k]) continue;
+    tree.addTopLevelItem(_QTreeWidgetItem([k, client.user[k]]));
+  }
+  return tree;
 }
 
 function generateTabWidget(client) {
-  const tabs = [];
+  const tabw = new QTabWidget();
+  tabw.setTabPosition(TabPosition.West);
   for(const s of ['Guilds', 'Channels', 'Users'])
-    tabs.push([generateTab(client, s.toLowerCase()), s]);
-  tabs.push([clientUserTab(client), 'Me']);
-  return _QTabWidget(tabs, TabPosition.West);
+    tabw.addTab(generateTab(client, s.toLowerCase()), no_icon, s);
+  tabw.addTab(clientUserTab(client), no_icon, 'Me');
+  return tabw;
 }
 
-/**
- * @param {Client} client 
- */
-function showMainMenu(client) {
-  if(!mw) mw = _QMainWindow('Discord API Browser', generateTabWidget(client), style_sheet, { min: [800,600] });
-  mw.show();
-}
+module.exports = {
+  main_window: mw,
 
-module.exports = showMainMenu;
+  /** @param {Client} client */
+  updateTabs: (client) => mw.setCentralWidget(generateTabWidget(client))
+};
