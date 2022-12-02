@@ -4,14 +4,14 @@ const User = require('../User');
 class DMChannel extends TextBasedChannel {
   /** @type {User} */ recipient;
 
-  constructor(data, client) {
-    super(data, client);
-    this.recipient = data.recipients[0];
-    this.fetchRecipient();
+  constructor(data, client, partial) {
+    super(data, client, partial);
+    this.recipient = new User(data.recipients[0], this.client, true);
+    this.client.users.cache.set(this.recipient.id, this.recipient);
   }
 
   async fetchRecipient() {
-    return this.recipient = await this.client.users.fetch(this.recipient.id);
+    return this.recipient = await this.client.users.fetch(this.recipient.id, true);
   }
 
   get name() {

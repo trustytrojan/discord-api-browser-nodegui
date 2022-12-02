@@ -14,32 +14,31 @@ class UserManager extends DataManager {
   /**
    * Fetches and, if not already cached, caches the desired User object from Discord.
    * @param {string} id 
+   * @param {boolean | undefined} force
    * @returns {Promise<User>}
    */
-  async fetch(id) {
-    {
+  async fetch(id, force) {
+    if(!force) {
       const cached = this.cache.get(id);
       if(cached) return cached;
     }
     const data = await super.fetch(`/users/${id}`);
-    return this.cache.set(id, new User(data)).get(id);
+    return this.cache.set(id, new User(data, this.client)).get(id);
   }
 
   /**
    * Should only be used by the Client class for fetching the user associated with its token.
    * @returns {Promise<ClientUser>}
    */
-  async fetch_me() {
+  async fetchMe() {
     const data = await super.fetch('/users/@me');
-    return this.cache.set(data.id, new ClientUser(data)).get(data.id);
+    return this.cache.set(data.id, new ClientUser(data, this.client)).get(data.id);
   }
 
-  async fetch_friends() {
-    this.busy = true;
+  async fetchFriends() {
     const data = await super.fetch(`/users/@me/relationships`);
-    for(const { id } of data)
-      await this.fetch(id);
-    this.busy = false;
+    for(const friend of data)
+      this.cache.set(friend.id, new User(friend, this.client, true));
   }
 };
 

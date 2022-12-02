@@ -21,6 +21,6 @@ module.exports = class Client {
    */
   async login(token) {
     this.token = token;
-    this.user = await this.users.fetch_me();
+    this.user = await this.users.fetchMe();
   }
 };

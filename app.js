@@ -1,5 +1,4 @@
 const Client = require('./classes/Client');
-const { main_window, updateTabs } = require('./main-menu');
 
 async function main() {
   let token;
@@ -14,8 +13,7 @@ async function main() {
     else if(err === 401)
       console.error('Invalid token, launching with no user login');
   }
-  updateTabs(client)
-  main_window.show();
+  require('./main-window')(client);
 }
 
 main();

@@ -7,8 +7,8 @@ class GroupDMChannel extends TextBasedChannel {
   /** @type {string} */ icon;
   /** @type {Map<string,User>} */ recipients;
 
-  constructor(data, client) {
-    super(data, client);
+  constructor(data, client, partial) {
+    super(data, client, partial);
     for(const k in this)
       if(data[k] !== undefined)
         this[k] = data[k];

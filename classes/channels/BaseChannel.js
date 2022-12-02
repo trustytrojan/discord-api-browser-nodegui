@@ -1,14 +1,17 @@
 const Base = require('../Base');
+const User = require('../User');
 const channel_types = require('./channel-types');
 
 class BaseChannel extends Base {
   /** @type {number} */ type;
+  /** @type {boolean} */ partial;
 
-  constructor(data, client) {
+  constructor(data, client, partial) {
     super(data, client);
     for(const k in this)
       if(data[k] !== undefined)
         this[k] = data[k];
+    this.partial = partial;
   }
 
   get typeString() {

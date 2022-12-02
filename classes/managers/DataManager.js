@@ -1,5 +1,8 @@
 const Client = require('../Client');
 
+/** @param {number} x */
+const wait = (x) => new Promise((resolve) => setTimeout(resolve, x));
+
 class DataManager {
   /** @type {Client} */ client;
   /** @type {Map<string,any>} */ cache;
@@ -25,8 +28,9 @@ class DataManager {
     const data = await resp.json();
 
     // discord responds with a `message` property to indicate an error
-    if(!resp.ok)
-      throw resp.status;
+    if(!resp.ok) switch(resp.status) {
+      case 429: throw 'requesting too fast!';
+    }
 
     return data;
   }

@@ -1,44 +1,36 @@
 const Client = require('./classes/Client');
 const style_sheet = require('./style-sheet');
-const { TabPosition, Direction, QMainWindow, QTreeWidget, QTabWidget, QIcon, QMenuBar, QMenu, QAction } = require('@nodegui/nodegui');
+const { TabPosition, Direction, QMainWindow, QTreeWidget, QTabWidget, QIcon } = require('@nodegui/nodegui');
 const { _QLabel, _QPushButton, _QBoxLayout, _QTreeWidgetItem, _QAction } = require('./custom-constructors');
 const { wrap_layout } = require('./utils');
 
 const no_icon = new QIcon();
 
-class MainMenu extends QMainWindow {
-  /** @type {Client} */ client;
+/** @type {Client} */
+let client;
 
-  constructor(client) {
-    super();
-    this.client = client;
-    this.setWindowTitle('Discord API Browser');
-    this.setStyleSheet(style_sheet);
-    this.setMinimumSize(800, 600);
+/** @type {QMainWindow} */
+let mw;
 
-    const fetch_friends = _QAction('Fetch Friends', () => {
-
-    });
-  }
+function updateTabs() {
+  mw.setCentralWidget(generateTabWidget());
 }
 
-
-const fetch_menu = new QMenu();
-fetch_menu.
-
-new QAction().addEventListener('triggered', () =>)
-
-const menu_bar = new QMenuBar();
-menu_bar.addMenu(fetch_menu);
-
-mw.setMenuBar(menu_bar);
+function createMenus() {
+  const fetch_menu = mw.menuBar().addMenu('Fetch');
+  fetch_menu.addAction(_QAction('Fetch Friends', async () => {
+    await client.users.fetchFriends();
+    
+  }));
+  fetch_menu.addAction(_QAction('Fetch DMs', () => client.channels.fetchDMs().then(updateTabs)));
+  fetch_menu.addAction(_QAction('Fetch Guilds', () => client.guilds.fetchAll().then(updateTabs)));
+}
 
 /**
  * For guilds,channels,users
- * @param {Client} client 
  * @param {'guilds' | 'channels' | 'users'} elementType
  */
-function generateTab(client, elementType) {
+function generateTab(elementType) {
   const data = client[elementType].cache;
   if(data.size === 0) {
     const without_the_s = elementType.substring(0, elementType.length-1);
@@ -52,21 +44,17 @@ function generateTab(client, elementType) {
     users: 'tag'
   }[elementType];
   tree.setHeaderLabels(['id', name_column]);
-  for(const [k, { name, tag }] of data) {
+  for(const [k, { name, tag }] of data)
     tree.addTopLevelItem(_QTreeWidgetItem([k, name ?? tag]));
-  }
   return tree;
 }
 
-/**
- * @param {Client} client 
- */
-function clientUserTab(client) {
+function clientUserTab() {
   if(!client.user) {
     const label = _QLabel('no user login');
     const login_btn = _QPushButton('login', () => {
       require('./login-form')(client);
-      mw.setCentralWidget(generateTabWidget(client));
+      mw.setCentralWidget(generateTabWidget());
     });
     const layout = new _QBoxLayout(Direction.TopToBottom, [label, login_btn]);
     return wrap_layout(layout);
@@ -75,24 +63,32 @@ function clientUserTab(client) {
   tree.setColumnCount(2);
   tree.setHeaderLabels(['key', 'value']);
   for(const k in client.user) {
-    if(typeof client.user[k] !== 'string') continue;
-    tree.addTopLevelItem(_QTreeWidgetItem([k, client.user[k]]));
+    if(client.user[k] === undefined) continue;
+    tree.addTopLevelItem(_QTreeWidgetItem([k, String(client.user[k])]));
   }
   return tree;
 }
 
-function generateTabWidget(client) {
+function generateTabWidget() {
   const tabw = new QTabWidget();
   tabw.setTabPosition(TabPosition.West);
   for(const s of ['Guilds', 'Channels', 'Users'])
-    tabw.addTab(generateTab(client, s.toLowerCase()), no_icon, s);
-  tabw.addTab(clientUserTab(client), no_icon, 'Me');
+    tabw.addTab(generateTab(s.toLowerCase()), no_icon, s);
+  tabw.addTab(clientUserTab(), no_icon, 'Me');
   return tabw;
 }
 
-module.exports = {
-  main_window: mw,
-
-  /** @param {Client} client */
-  updateTabs: (client) => mw.setCentralWidget(generateTabWidget(client))
+/**
+ * @param {Client} c 
+ */
+module.exports = function(c) {
+  client = c;
+  mw = new QMainWindow();
+  mw.setWindowTitle('Discord API Browser');
+  mw.setStyleSheet(style_sheet);
+  mw.setMinimumSize(800, 600);
+  createMenus();
+  updateTabs();
+  mw.show();
+  global.mw = mw;
 };

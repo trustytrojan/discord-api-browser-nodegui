@@ -12,12 +12,15 @@ class User extends Base {
   /** @type {number} */ public_flags;
   /** @type {number} */ flags;
   /** @type {string} */ banner_color;
+  /** @type {boolean} */ partial;
 
-  constructor(data, client) {
+  constructor(data, client, partial) {
+    console.log(data.id);
     super(data, client);
     for(const k in this)
       if(data[k] !== undefined)
         this[k] = data[k];
+    this.partial = partial ?? false;
   }
 
   get tag() {
