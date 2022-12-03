@@ -6,11 +6,34 @@ const { wrap_layout } = require('./utils');
 const no_icon = new QIcon();
 
 /**
+ * For guilds, channels, and users tabs
+ * @param {QTreeWidget} tree 
+ * @param {Map<string,any>} data 
+ */
+function populateTreeWidgetWithData(tree, data) {
+  for(const [k, { name, tag }] of data)
+    tree.addTopLevelItem(_QTreeWidgetItem([k, name ?? tag]));
+}
+
+/**
+ * For any object
+ * @param {QTreeWidget} tree 
+ * @param {object} object 
+ * @param {boolean} excludeUndefined 
+ */
+function populateTreeWidgetWithProperties(tree, object, excludeUndefined = true) {
+  for(const k in object) {
+    if(excludeUndefined && object[k] === undefined) continue;
+    tree.addTopLevelItem(_QTreeWidgetItem([k, String(object[k])]));
+  }
+}
+
+/**
  * For guilds,channels,users
  * @param {Client} client
  * @param {'guilds' | 'channels' | 'users'} elementType
  */
- function createTab(client, elementType) {
+function createTab(client, elementType) {
   const data = client[elementType].cache;
   if(data.size === 0) {
     const without_the_s = elementType.substring(0, elementType.length-1);
@@ -24,8 +47,7 @@ const no_icon = new QIcon();
     users: 'tag'
   }[elementType];
   tree.setHeaderLabels(['id', name_column]);
-  for(const [k, { name, tag }] of data)
-    tree.addTopLevelItem(_QTreeWidgetItem([k, name ?? tag]));
+  populateTreeWidgetWithData(tree, data);
   return tree;
 }
 
@@ -49,14 +71,13 @@ function createMeTab(client, tabw) {
   const tree = new QTreeWidget();
   tree.setColumnCount(2);
   tree.setHeaderLabels(['key', 'value']);
-  for(const k in client.user) {
-    if(client.user[k] === undefined) continue;
-    tree.addTopLevelItem(_QTreeWidgetItem([k, String(client.user[k])]));
-  }
+  populateTreeWidgetWithProperties(tree, client.user);
   return tree;
 }
 
 module.exports = {
   get createMeTab() { return createMeTab; },
-  get createTab() { return createTab; }
+  get createTab() { return createTab; },
+  get populateTreeWidgetWithData() { return populateTreeWidgetWithData; },
+  get populateTreeWidgetWithProperties() { return populateTreeWidgetWithProperties; }
 };

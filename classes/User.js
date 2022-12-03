@@ -1,5 +1,7 @@
 const Base = require('./Base');
 const cdn = require('../cdn-utils');
+const { QTreeWidget } = require('@nodegui/nodegui');
+const { _QTreeWidgetItem } = require('../custom-constructors');
 
 class User extends Base {
   /** @type {string} */ username;
@@ -15,7 +17,6 @@ class User extends Base {
   /** @type {boolean} */ partial;
 
   constructor(data, client, partial) {
-    console.log(data.id);
     super(data, client);
     for(const k in this)
       if(data[k] !== undefined)
@@ -33,6 +34,15 @@ class User extends Base {
    */
   avatarURL(options) {
     return cdn.avatar(this.id, this.avatar, options);
+  }
+
+  get treeWidget() {
+    const tree = new QTreeWidget();
+    for(const k in this) {
+      if(this[k] === undefined) continue;
+      tree.addTopLevelItem(_QTreeWidgetItem([k, String(this[k])]));
+    }
+    return tree;
   }
 };
 

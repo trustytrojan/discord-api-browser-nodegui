@@ -22,5 +22,6 @@ module.exports = class Client {
   async login(token) {
     this.token = token;
     this.user = await this.users.fetchMe();
+    console.log(`Client successfully logged in as ${this.user.tag}!`);
   }
 };
