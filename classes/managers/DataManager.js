@@ -32,6 +32,7 @@ class DataManager {
       console.error(`bad status received: ${resp.status}`);
       switch(resp.status) {
         case 429: throw 'requesting too fast!';
+        case 403: throw 'we are forbidden from this page!';
         default: throw resp.statusText;
       }
     }

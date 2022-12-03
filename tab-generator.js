@@ -1,7 +1,7 @@
 const Client = require('./classes/Client');
 const { Direction, QTreeWidget, QTabWidget, QIcon } = require('@nodegui/nodegui');
 const { _QLabel, _QPushButton, _QBoxLayout, _QTreeWidgetItem } = require('./custom-constructors');
-const { wrap_layout } = require('./utils');
+const { wrapLayoutWithWidget } = require('./utils');
 
 const no_icon = new QIcon();
 
@@ -10,7 +10,7 @@ const no_icon = new QIcon();
  * @param {QTreeWidget} tree 
  * @param {Map<string,any>} data 
  */
-function populateTreeWidgetWithData(tree, data) {
+function populateTreeWidgetWithMapEntries(tree, data) {
   for(const [k, { name, tag }] of data)
     tree.addTopLevelItem(_QTreeWidgetItem([k, name ?? tag]));
 }
@@ -21,7 +21,7 @@ function populateTreeWidgetWithData(tree, data) {
  * @param {object} object 
  * @param {boolean} excludeUndefined 
  */
-function populateTreeWidgetWithProperties(tree, object, excludeUndefined = true) {
+function populateTreeWidgetWithObjectProperties(tree, object, excludeUndefined = true) {
   for(const k in object) {
     if(excludeUndefined && object[k] === undefined) continue;
     tree.addTopLevelItem(_QTreeWidgetItem([k, String(object[k])]));
@@ -47,7 +47,7 @@ function createTab(client, elementType) {
     users: 'tag'
   }[elementType];
   tree.setHeaderLabels(['id', name_column]);
-  populateTreeWidgetWithData(tree, data);
+  populateTreeWidgetWithMapEntries(tree, data);
   return tree;
 }
 
@@ -66,18 +66,18 @@ function createMeTab(client, tabw) {
       tabw.insertTab(3, createMeTab(), no_icon, 'Me');
     });
     const layout = new _QBoxLayout(Direction.TopToBottom, [label, login_btn]);
-    return wrap_layout(layout);
+    return wrapLayoutWithWidget(layout);
   }
   const tree = new QTreeWidget();
   tree.setColumnCount(2);
   tree.setHeaderLabels(['key', 'value']);
-  populateTreeWidgetWithProperties(tree, client.user);
+  populateTreeWidgetWithObjectProperties(tree, client.user);
   return tree;
 }
 
 module.exports = {
   get createMeTab() { return createMeTab; },
   get createTab() { return createTab; },
-  get populateTreeWidgetWithData() { return populateTreeWidgetWithData; },
-  get populateTreeWidgetWithProperties() { return populateTreeWidgetWithProperties; }
+  get populateTreeWidgetWithMapEntries() { return populateTreeWidgetWithMapEntries; },
+  get populateTreeWidgetWithObjectProperties() { return populateTreeWidgetWithObjectProperties; }
 };

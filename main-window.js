@@ -2,7 +2,7 @@ const Client = require('./classes/Client');
 const style_sheet = require('./style-sheet');
 const { TabPosition, QMainWindow, QTabWidget, QIcon, QTreeWidget } = require('@nodegui/nodegui');
 const { _QAction } = require('./custom-constructors');
-const { createTab, createMeTab, populateTreeWidgetWithData } = require('./tab-generator');
+const { createTab, createMeTab, populateTreeWidgetWithMapEntries } = require('./tab-generator');
 
 const no_icon = new QIcon();
 
@@ -11,6 +11,7 @@ mw.setWindowTitle('Discord API Browser');
 mw.setStyleSheet(style_sheet);
 mw.setMinimumSize(800, 600);
 
+// the central widget of the window
 const tabw = new QTabWidget();
 tabw.setTabPosition(TabPosition.West);
 
@@ -30,7 +31,7 @@ module.exports = function(client) {
     /** @type {QTreeWidget} */
     const tree = tabw.widget(2);
     tree.clear();
-    populateTreeWidgetWithData(tree, client.guilds.cache);
+    populateTreeWidgetWithMapEntries(tree, client.guilds.cache);
   }));
 
   fetch_menu.addAction(_QAction('Fetch DMs', async () => {
@@ -39,7 +40,7 @@ module.exports = function(client) {
     /** @type {QTreeWidget} */
     const tree = tabw.widget(2);
     tree.clear();
-    populateTreeWidgetWithData(tree, client.channels.cache);
+    populateTreeWidgetWithMapEntries(tree, client.channels.cache);
   }));
 
   fetch_menu.addAction(_QAction('Fetch Friends', async () => {
@@ -49,7 +50,7 @@ module.exports = function(client) {
     /** @type {QTreeWidget} */
     const tree = tabw.widget(2);
     tree.clear();
-    populateTreeWidgetWithData(tree, client.users.cache);
+    populateTreeWidgetWithMapEntries(tree, client.users.cache);
   }));
 
   // add tabs to window
@@ -58,5 +59,5 @@ module.exports = function(client) {
   tabw.addTab(createMeTab(client, tabw), no_icon, 'Me');
 
   mw.show();
-  global.mw = mw;
+  return mw;
 };

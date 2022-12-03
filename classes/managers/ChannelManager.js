@@ -1,4 +1,4 @@
-const { GuildText, DM, GuildVoice, GroupDM } = require('../channels/channel-types');
+const { GuildText, DM, GuildVoice, GroupDM } = require('../channels/ChannelType');
 const BaseChannel = require('../channels/BaseChannel');
 const DataManager = require('./DataManager');
 

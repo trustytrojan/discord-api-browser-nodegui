@@ -1,8 +1,8 @@
 const Client = require('./classes/Client');
 
+const client = new Client();
+
 async function main() {
-  let token;
-  const client = new Client();
   try {
     const token = require('./token.json');
     await client.login(token);
@@ -13,7 +13,8 @@ async function main() {
     else if(err === 401)
       console.error('Invalid token, launching with no user login');
   }
-  require('./main-window')(client);
+
+  global.mw = require('./main-window')(client);
 }
 
 main();

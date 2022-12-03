@@ -1,6 +1,6 @@
 const Base = require('../Base');
 const User = require('../User');
-const channel_types = require('./channel-types');
+const channel_types = require('./ChannelType');
 
 class BaseChannel extends Base {
   /** @type {number} */ type;
