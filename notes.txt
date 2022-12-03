@@ -1,0 +1,4 @@
+type 1 = friend
+type 2 = blocked
+type 3 = incoming request (?)
+type 4 = outgoing request

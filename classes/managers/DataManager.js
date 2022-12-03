@@ -21,15 +21,19 @@ class DataManager {
    */
   async fetch(api_path) {
     const url = `https://discord.com/api/v9${api_path}`;
-    console.log(`Fetching ${url}`);
+    console.log(`Fetching ${url}...`);
 
     const fetch = (await import('node-fetch')).default;
     const resp = await fetch(url, { headers: { authorization: this.client.token } });
     const data = await resp.json();
 
     // discord responds with a `message` property to indicate an error
-    if(!resp.ok) switch(resp.status) {
-      case 429: throw 'requesting too fast!';
+    if(!resp.ok) {
+      console.error(`bad status received: ${resp.status}`);
+      switch(resp.status) {
+        case 429: throw 'requesting too fast!';
+        default: throw resp.statusText;
+      }
     }
 
     return data;
