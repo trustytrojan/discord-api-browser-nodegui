@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@nodegui/nodegui": "^0.57.2",
+    "@nodegui/nodegui": "^0.57.3",
     "node-fetch": "^3.3.0"
   }
 }

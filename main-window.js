@@ -43,7 +43,7 @@ module.exports = function(client) {
     populateTreeWidgetWithMapEntries(tree, client.channels.cache);
   }));
 
-  fetch_menu.addAction(_QAction('Fetch Friends', async () => {
+  fetch_menu.addAction(_QAction('Fetch Relationships', async () => {
     await client.users.fetchFriends();
     //console.log(client.users.cache);
 

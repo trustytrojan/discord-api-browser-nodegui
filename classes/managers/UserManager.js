@@ -35,14 +35,7 @@ class UserManager extends DataManager {
     return this.cache.set(data.id, new ClientUser(data, this.client)).get(data.id);
   }
 
-  async fetchFriends() {
-    const data = await super.fetch(`/users/@me/relationships`);
-    console.log(data);
-    for(const friend of data) {
-      console.log(friend);
-      this.cache.set(friend.id, new User(friend, this.client, true));
-    }
-  }
+  
 };
 
 module.exports = UserManager;
