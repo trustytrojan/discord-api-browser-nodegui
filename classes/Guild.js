@@ -46,6 +46,8 @@ class Guild extends Base {
     this.partial = partial;
   }
 
+  get descriptor() { return this.name; }
+
   async fetch() {
     const data = this.client.guilds.fetch(this.id);
     this.copyDefinedPropertiesFrom(data);

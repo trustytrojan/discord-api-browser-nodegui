@@ -1,6 +1,4 @@
-const {
-  QWidget, QLayout,
-} = require('@nodegui/nodegui');
+const { QWidget, QLayout } = require('@nodegui/nodegui');
 
 /**
  * @param {QLayout} layout

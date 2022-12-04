@@ -29,7 +29,7 @@ module.exports = function(client) {
     await client.guilds.fetchAll();
 
     /** @type {QTreeWidget} */
-    const tree = tabw.widget(2);
+    const tree = tabw.widget(0);
     tree.clear();
     populateTreeWidgetWithMapEntries(tree, client.guilds.cache);
   }));
@@ -38,23 +38,23 @@ module.exports = function(client) {
     await client.channels.fetchDMs();
 
     /** @type {QTreeWidget} */
-    const tree = tabw.widget(2);
+    const tree = tabw.widget(1);
     tree.clear();
     populateTreeWidgetWithMapEntries(tree, client.channels.cache);
   }));
 
   fetch_menu.addAction(_QAction('Fetch Relationships', async () => {
-    await client.users.fetchFriends();
+    await client.relationships.fetchAll();
     //console.log(client.users.cache);
 
     /** @type {QTreeWidget} */
     const tree = tabw.widget(2);
     tree.clear();
-    populateTreeWidgetWithMapEntries(tree, client.users.cache);
+    populateTreeWidgetWithMapEntries(tree, client.relationships.cache);
   }));
 
   // add tabs to window
-  for(const s of ['Guilds', 'Channels', 'Users'])
+  for(const s of ['Guilds', 'Channels', 'Relationships', 'Users'])
     tabw.addTab(createTab(client, s.toLowerCase()), no_icon, s);
   tabw.addTab(createMeTab(client, tabw), no_icon, 'Me');
 

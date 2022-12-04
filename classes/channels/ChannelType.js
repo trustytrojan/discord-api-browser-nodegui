@@ -12,11 +12,12 @@ class ChannelType {
   static get GuildDirectory() { return 14; }
   static get GuildForum() { return 15; }
 
-  /**
-   * @param {number} x discord channel type represnted as integer
-   * @returns {string} normal-person readable channel type
-   */
-  static toString(x) {
+  // /**
+  //  * @param {number} x discord channel type represnted as integer
+  //  * @returns {string} normal-person readable channel type
+  //  */
+  // access with []
+  static get toString() {
     return {
       0: 'Text Channel',
       1: 'DM Channel',
@@ -24,8 +25,13 @@ class ChannelType {
       3: 'Group DM Channel',
       4: 'Category Channel',
       5: 'Announcement Channel',
-
-    }[x];
+      10: 'Announcement Thread',
+      11: 'Public Thread',
+      12: 'Private Thread',
+      13: 'Stage Channel',
+      14: 'GuildDirectory',
+      15: 'Forum Channel'
+    };
   }
 }
 

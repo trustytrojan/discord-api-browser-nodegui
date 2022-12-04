@@ -1,6 +1,7 @@
 const Base = require('./Base');
 const Client = require('./Client');
 const User = require('./User');
+const RelationshipType = require('./RelationshipType');
 
 class Relationship extends Base {
   /** @type {number} */ type;
@@ -17,7 +18,10 @@ class Relationship extends Base {
       if(data[k] !== undefined)
         this[k] = data[k];
     this.user = new User(data.user, client, true);
-    client.users.cache.set(data.id, this.user);
+  }
+
+  get descriptor() {
+    return `${RelationshipType.toString(this.type)}: ${this.user.tag}`;
   }
 }
 

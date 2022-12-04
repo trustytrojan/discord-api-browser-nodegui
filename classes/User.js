@@ -24,8 +24,13 @@ class User extends Base {
     this.partial = partial ?? false;
   }
 
-  get tag() {
-    return `${this.username}#${this.discriminator}`;
+  get tag() { return `${this.username}#${this.discriminator}`; }
+  get descriptor() { return this.tag; }
+
+  async fetch() {
+    const data = await this.client.users.fetch(this.id);
+    this.copyDefinedPropertiesFrom(data);
+    return this;
   }
 
   /**

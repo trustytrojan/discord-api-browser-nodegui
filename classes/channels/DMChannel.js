@@ -14,7 +14,7 @@ class DMChannel extends TextBasedChannel {
     return this.recipient = await this.client.users.fetch(this.recipient.id, true);
   }
 
-  get name() {
+  get descriptor() {
     const { tag, username, discriminator } = this.recipient;
     return `DM with ${tag ?? `${username}#${discriminator}`}`;
   }
